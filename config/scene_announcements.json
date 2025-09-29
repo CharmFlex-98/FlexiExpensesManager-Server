@@ -1,0 +1,12 @@
+[
+  {
+    "scene": "HOME",
+    "title": "Exciting Update Available!",
+    "subtitle": "We've added amazing new features to enhance your experience. Update now to get the latest improvements!",
+    "label": "NEW FEATURE",
+    "closable": true,
+    "iconType": "ANNOUNCEMENT",
+    "actionType": "CLOSE",
+    "show": true
+  }
+]
