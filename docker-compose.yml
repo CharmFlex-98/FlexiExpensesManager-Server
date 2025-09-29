@@ -1,0 +1,12 @@
+services:
+  app:
+    image: charmflex/server-XXXX:latest
+    ports:
+      - "3010:3000"
+    environment:
+      SECRET_FILE_PATH: /app/config/scene_announcements.json
+      CONFIG_ANNOUNCEMENT_FILE_PATH: /app/secrets/prod_private.pem
+
+    volumes:
+      - ./config/scene_announcements.json:/app/config/scene_announcements.json:ro
+      - ./secrets/prod_private.pem:/app/secrets/prod_private.pem
