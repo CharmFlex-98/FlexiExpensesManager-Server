@@ -8,5 +8,15 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true
+  },
+  {
+    "scene": "REFERRAL",
+    "title": "Coming Soon!",
+    "subtitle": "The feature is still under development. Stay tuned",
+    "label": "IN PROGRESS",
+    "closable": true,
+    "iconType": "ANNOUNCEMENT",
+    "actionType": "BACK",
+    "show": true
   }
 ]
