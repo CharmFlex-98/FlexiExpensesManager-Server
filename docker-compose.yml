@@ -8,5 +8,5 @@ services:
       - SECRET_FILE_PATH=/app/secrets/prod_private.pem
 
     volumes:
-      - ./config/scene_announcements.json:/app/config/scene_announcements.json:ro
-      - ./secrets/prod_private.pem:/app/secrets/prod_private.pem:ro
+      - ./config:/app/config:ro
+      - ./secrets:/app/secrets:ro
