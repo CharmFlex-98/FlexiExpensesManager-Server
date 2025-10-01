@@ -1,9 +1,9 @@
 [
   {
     "scene": "HOME",
-    "title": "Exciting Update Available!",
-    "subtitle": "We've added amazing new features to enhance your experience. Update now to get the latest improvements!",
-    "label": "NEW FEATURE",
+    "title": "announcement.feature.update.title",
+    "subtitle": "announcement_feature_update_subtitle",
+    "label": "announcement_feature_update_label",
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
@@ -11,12 +11,22 @@
   },
   {
     "scene": "REFERRAL",
-    "title": "Coming Soon!",
-    "subtitle": "The feature is still under development. Stay tuned",
-    "label": "IN PROGRESS",
+    "title": "announcement_feature_in_development_title",
+    "subtitle": "announcement_feature_in_development_subtitle",
+    "label": "announcement_feature_in_development_label",
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "BACK",
+    "show": true
+  },
+  {
+    "scene": "TAG",
+    "title": "announcement_feature_more_title",
+    "subtitle": "announcement_feature_more_subtitle",
+    "label": "announcement_feature_more_label",
+    "closable": true,
+    "iconType": "ANNOUNCEMENT",
+    "actionType": "CLOSE",
     "show": true
   }
 ]
