@@ -1,7 +1,7 @@
 [
   {
     "scene": "HOME",
-    "title": "announcement.feature.update.title",
+    "title": "announcement_feature_update_title",
     "subtitle": "announcement_feature_update_subtitle",
     "label": "announcement_feature_update_label",
     "closable": true,
