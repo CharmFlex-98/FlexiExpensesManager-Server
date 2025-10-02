@@ -25,7 +25,7 @@ class RemoteConfigController(
     @SignedResponse
     fun getSceneAnnouncement(
         @RequestBody remoteConfigAnnouncementRequest: RemoteConfigAnnouncementRequest,
-        @RequestHeader appVersion: String,
+        @RequestHeader("App-Version") appVersion: String,
         @RequestHeader("Accept-Language") language: String // or any header name
     ): RemoteConfigAnnouncementResponse {
         return remoteConfigService.getAnnouncement(remoteConfigAnnouncementRequest.scene, language, appVersion) ?: throw GenericException
