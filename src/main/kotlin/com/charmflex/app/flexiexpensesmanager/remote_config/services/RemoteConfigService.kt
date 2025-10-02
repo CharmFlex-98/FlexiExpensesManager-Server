@@ -3,6 +3,7 @@ package com.charmflex.app.flexiexpensesmanager.remote_config.services
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigScene
 import com.charmflex.app.flexiexpensesmanager.remote_config.repositories.RemoteConfigRepository
+import org.springframework.cglib.core.Local
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Service
 import java.util.Locale
@@ -19,8 +20,9 @@ class RemoteConfigService(
         if (res == null) return null
 
         val locale = when (localeKey) {
-            "zh_CN" -> Locale.SIMPLIFIED_CHINESE
-            "zh_HK, zh_TW" -> Locale.TRADITIONAL_CHINESE
+            "zh_CN" -> Locale.CHINESE
+            "zh_TW" -> Locale.TAIWAN
+            "zh_HK" -> Locale("zh", "HK")
             "ja" -> Locale.JAPANESE
             "ko" -> Locale.KOREAN
             else -> Locale.US
