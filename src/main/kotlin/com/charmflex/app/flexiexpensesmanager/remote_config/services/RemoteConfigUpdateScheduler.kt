@@ -1,9 +1,6 @@
 package com.charmflex.app.flexiexpensesmanager.remote_config.services
 
-import com.charmflex.app.flexiexpensesmanager.remote_config.models.ActionType
-import com.charmflex.app.flexiexpensesmanager.remote_config.models.IconType
-import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
-import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigScene
+import com.charmflex.app.flexiexpensesmanager.remote_config.models.*
 import com.charmflex.app.flexiexpensesmanager.remote_config.repositories.RemoteConfigRepository
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -35,7 +32,7 @@ class RemoteConfigUpdateScheduler(
         val res = scenes.map {
             val jsonObject = it as? JsonObject
             jsonObject?.let {
-                RemoteConfigAnnouncementResponse(
+                RemoteConfigAnnouncementJson(
                     title = (it["title"] as JsonPrimitive).content,
                     subtitle = (it.get("subtitle") as JsonPrimitive).content,
                     label = (it.get("label") as JsonPrimitive).content,
@@ -43,7 +40,8 @@ class RemoteConfigUpdateScheduler(
                     closable = (it.get("closable") as JsonPrimitive).content.toBoolean(),
                     iconType = IconType.valueOf((it.get("iconType") as JsonPrimitive).content),
                     scene = RemoteConfigScene.valueOf((it["scene"] as JsonPrimitive).content),
-                    show = (it.get("show") as JsonPrimitive).content.toBoolean()
+                    show = (it.get("show") as JsonPrimitive).content.toBoolean(),
+                    target = (it.get("target") as JsonPrimitive).content,
                 )
             }
         }.filterNotNull()

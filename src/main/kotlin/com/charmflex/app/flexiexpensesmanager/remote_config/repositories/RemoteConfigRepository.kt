@@ -1,11 +1,10 @@
 package com.charmflex.app.flexiexpensesmanager.remote_config.repositories
 
+import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementJson
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
-import kotlinx.serialization.json.Json
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Repository
-import java.io.BufferedReader
 
 @Repository
 final class RemoteConfigRepository(
@@ -14,9 +13,9 @@ final class RemoteConfigRepository(
     private val resourceLoader: ResourceLoader
 ) {
     @Volatile
-    var announcementCache: List<RemoteConfigAnnouncementResponse>? = null
+    var announcementCache: List<RemoteConfigAnnouncementJson>? = null
         private set
-    fun setRemoteConfigAnnouncementResponse(remoteConfigAnnouncementResponse: List<RemoteConfigAnnouncementResponse>) {
-        announcementCache = remoteConfigAnnouncementResponse
+    fun setRemoteConfigAnnouncementResponse(remoteConfigAnnouncementJson: List<RemoteConfigAnnouncementJson>) {
+        announcementCache = remoteConfigAnnouncementJson
     }
 }

@@ -7,7 +7,8 @@
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
-    "show": true
+    "show": true,
+    "target": "|1.0.11"
   },
   {
     "scene": "REFERRAL",
@@ -17,7 +18,8 @@
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "BACK",
-    "show": true
+    "show": true,
+    "target": ""
   },
   {
     "scene": "TAG",
@@ -27,6 +29,7 @@
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
+    "target": "",
     "show": true
   }
 ]

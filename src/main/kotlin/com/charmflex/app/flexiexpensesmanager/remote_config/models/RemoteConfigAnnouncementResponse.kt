@@ -19,3 +19,15 @@ data class RemoteConfigAnnouncementResponse(
     val actionType: ActionType,
     val show: Boolean
 )
+
+data class RemoteConfigAnnouncementJson(
+    val scene: RemoteConfigScene,
+    val title: String,
+    val subtitle: String,
+    val label: String,
+    val closable: Boolean,
+    val iconType: IconType,
+    val actionType: ActionType,
+    val show: Boolean,
+    val target: String
+)
