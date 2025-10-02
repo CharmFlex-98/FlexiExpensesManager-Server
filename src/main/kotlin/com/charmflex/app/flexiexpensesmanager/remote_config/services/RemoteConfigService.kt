@@ -15,7 +15,8 @@ class RemoteConfigService(
 ) {
     fun getAnnouncement(scene: RemoteConfigScene, localeKey: String, appVersion: String): RemoteConfigAnnouncementResponse? {
         val result = remoteConfigRepository.announcementCache
-        val res = result?.first { it.scene == scene && matchVersion(appVersion, it.target) }
+        val appVer = appVersion.split("-")[0]
+        val res = result?.first { it.scene == scene && matchVersion(appVer, it.target) }
 
         if (res == null) return null
 
@@ -54,13 +55,26 @@ class RemoteConfigService(
         }
 
         if (splits[0].isEmpty()) {
-            return appVersion < target
+            // e.g. |1.0.1
+            val res = compareVersion(appVersion, splits[1])
+            return res == -1
         }
 
         if (splits[1].isEmpty()) {
-            return appVersion >= target
+            // e.g. 1.0.1|
+            val res = compareVersion(appVersion, splits[0])
+            return res == 0 || res == 1
         }
 
         return false
+    }
+
+    private fun compareVersion(appVersion: String, target: String): Int {
+        val appVersionTotal = appVersion.split(".").map { it.toInt() }.reduce { acc, item ->  acc * 10 + item }
+        val targetTotal = target.split(".").map { it.toInt() }.reduce { acc, item ->  acc * 10 + item }
+
+        if (appVersionTotal < targetTotal) return -1
+        if (appVersionTotal == targetTotal) return 0
+        return 1
     }
 }
