@@ -19,9 +19,7 @@ class CurrencyRateScheduler(
     @Scheduled(fixedRate = 3600000)
     fun fetchLatestCurrencyRate() {
         try {
-            println("start querying currency rate...")
             val res = currencyProxy.latestCurrencyRate()
-            println(res)
             currencyRepository.updateCurrencyRate(res)
         } catch (exception: Exception) {
             println("error in CurrencyRateScheduler: ${exception.message}")

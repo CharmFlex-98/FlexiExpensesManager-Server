@@ -48,8 +48,6 @@ class RemoteConfigUpdateScheduler(
             }
         }.filterNotNull()
 
-        println(res)
-
         repository.setRemoteConfigAnnouncementResponse(res)
     }
 }
