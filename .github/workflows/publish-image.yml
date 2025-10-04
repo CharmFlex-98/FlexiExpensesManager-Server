@@ -46,7 +46,7 @@ jobs:
           passphrase: ${{ secrets.SERVER_SSH_PW }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: ./static
-          target: ./servers/fem_server
+          target: ./servers/fem_server/public
 
       - name: build service image and publish
         run: |
