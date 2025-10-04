@@ -10,6 +10,7 @@ enum class ActionType {
 }
 
 data class RemoteConfigAnnouncementResponse(
+    val version: Int,
     val scene: RemoteConfigScene,
     val title: String,
     val subtitle: String,
@@ -17,10 +18,12 @@ data class RemoteConfigAnnouncementResponse(
     val closable: Boolean,
     val iconType: IconType,
     val actionType: ActionType,
+    val allowNotShowAgain: Boolean,
     val show: Boolean
 )
 
 data class RemoteConfigAnnouncementJson(
+    val version: Int,
     val scene: RemoteConfigScene,
     val title: String,
     val subtitle: String,
@@ -29,5 +32,6 @@ data class RemoteConfigAnnouncementJson(
     val iconType: IconType,
     val actionType: ActionType,
     val show: Boolean,
+    val allowNotShowAgain: Boolean,
     val target: String
 )

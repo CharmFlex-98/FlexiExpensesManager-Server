@@ -38,6 +38,15 @@ jobs:
           target: ./servers/fem_server
           strip_components: 1
 
+      - name: send static folder to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          passphrase: ${{ secrets.SERVER_SSH_PW }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: ./static
+          target: ./servers/fem_server
 
       - name: build service image and publish
         run: |

@@ -8,7 +8,9 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "|1.0.11"
+    "target": "|1.0.12",
+    "version": 1,
+    "allowNotShowAgain": true
   },
   {
     "scene": "REFERRAL",
@@ -19,7 +21,9 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "BACK",
     "show": true,
-    "target": ""
+    "target": "",
+    "version": 1,
+    "allowNotShowAgain": false
   },
   {
     "scene": "TAG",
@@ -30,6 +34,8 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "target": "",
-    "show": true
+    "show": true,
+    "version": 3,
+    "allowNotShowAgain": true
   }
 ]

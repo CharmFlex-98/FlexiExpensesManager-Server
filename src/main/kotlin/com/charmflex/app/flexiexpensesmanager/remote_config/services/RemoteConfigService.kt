@@ -16,7 +16,7 @@ class RemoteConfigService(
     fun getAnnouncement(scene: RemoteConfigScene, localeKey: String, appVersion: String): RemoteConfigAnnouncementResponse? {
         val result = remoteConfigRepository.announcementCache
         val appVer = appVersion.split("-")[0]
-        val res = result?.first { it.scene == scene && matchVersion(appVer, it.target) }
+        val res = result?.firstOrNull { it.scene == scene && matchVersion(appVer, it.target) }
 
         if (res == null) return null
 
@@ -37,7 +37,9 @@ class RemoteConfigService(
             closable = res.closable,
             iconType = res.iconType,
             actionType = res.actionType,
-            show = res.show
+            show = res.show,
+            version = res.version,
+            allowNotShowAgain = res.allowNotShowAgain
         )
     }
 

@@ -27,7 +27,7 @@ class RemoteConfigController(
         @RequestBody remoteConfigAnnouncementRequest: RemoteConfigAnnouncementRequest,
         @RequestHeader("App-Version") appVersion: String,
         @RequestHeader("Accept-Language") language: String // or any header name
-    ): RemoteConfigAnnouncementResponse {
-        return remoteConfigService.getAnnouncement(remoteConfigAnnouncementRequest.scene, language, appVersion) ?: throw GenericException
+    ): RemoteConfigAnnouncementResponse? {
+        return remoteConfigService.getAnnouncement(remoteConfigAnnouncementRequest.scene, language, appVersion)
     }
 }

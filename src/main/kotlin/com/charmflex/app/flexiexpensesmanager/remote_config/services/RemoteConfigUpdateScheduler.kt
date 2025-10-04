@@ -42,6 +42,8 @@ class RemoteConfigUpdateScheduler(
                     scene = RemoteConfigScene.valueOf((it["scene"] as JsonPrimitive).content),
                     show = (it.get("show") as JsonPrimitive).content.toBoolean(),
                     target = (it.get("target") as JsonPrimitive).content,
+                    version = (it.get("version") as JsonPrimitive).content.toInt(),
+                    allowNotShowAgain = (it.get("allowNotShowAgain") as JsonPrimitive).content.toBoolean()
                 )
             }
         }.filterNotNull()
