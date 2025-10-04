@@ -8,7 +8,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "|1.0.12",
+    "target": "|1.0.14",
     "version": 1,
     "allowNotShowAgain": true
   },
@@ -35,7 +35,7 @@
     "actionType": "CLOSE",
     "target": "",
     "show": true,
-    "version": 3,
+    "version": 1,
     "allowNotShowAgain": true
   }
 ]
