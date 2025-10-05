@@ -6,7 +6,7 @@
     "label": "announcement_feature_update_label",
     "closable": true,
     "iconType": "ANNOUNCEMENT",
-    "actionType": "CLOSE",
+    "actionType": "UPDATE_AT_STORE",
     "show": true,
     "target": "|1.0.16",
     "version": 1,
