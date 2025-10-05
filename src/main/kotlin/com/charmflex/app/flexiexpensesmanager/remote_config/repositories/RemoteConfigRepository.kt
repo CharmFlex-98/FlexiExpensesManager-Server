@@ -1,5 +1,6 @@
 package com.charmflex.app.flexiexpensesmanager.remote_config.repositories
 
+import com.charmflex.app.flexiexpensesmanager.remote_config.models.AdsConfigResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementJson
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
 import org.springframework.beans.factory.annotation.Value
@@ -15,7 +16,18 @@ final class RemoteConfigRepository(
     @Volatile
     var announcementCache: List<RemoteConfigAnnouncementJson>? = null
         private set
+
+    @Volatile
+    var adsConfigCache: AdsConfigResponse = AdsConfigResponse(emptyList())
+        private set
+
+
     fun setRemoteConfigAnnouncementResponse(remoteConfigAnnouncementJson: List<RemoteConfigAnnouncementJson>) {
         announcementCache = remoteConfigAnnouncementJson
     }
+
+    fun setAdsConfigResponse(adsConfigResponse: AdsConfigResponse) {
+        adsConfigCache = adsConfigResponse
+    }
+
 }

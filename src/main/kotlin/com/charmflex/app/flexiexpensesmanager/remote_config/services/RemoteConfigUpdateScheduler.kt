@@ -5,7 +5,6 @@ import com.charmflex.app.flexiexpensesmanager.remote_config.repositories.RemoteC
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.ResourceLoader
@@ -17,14 +16,15 @@ import java.io.BufferedReader
 @Service
 class RemoteConfigUpdateScheduler(
     @Value("\${remote-config.scene-announcement.path}")
-    private val remoteConfigFilePath: String,
-    private val resourceLoader: ResourceLoader,
+    private val announcementConfigFilePath: String,
+    @Value("\${remote-config.ads-config.path}")
+    private val adsConfigFilePath: String,
     private val repository: RemoteConfigRepository
 ) {
 
     @Scheduled(fixedRate = 60_000)
     fun updateScene() {
-        val jsonRes = FileSystemResource(remoteConfigFilePath)
+        val jsonRes = FileSystemResource(announcementConfigFilePath)
         val text = jsonRes.inputStream.bufferedReader().use(BufferedReader::readText)
 
         val scenes: List<JsonObject> = Json.decodeFromString(text)
@@ -49,5 +49,27 @@ class RemoteConfigUpdateScheduler(
         }.filterNotNull()
 
         repository.setRemoteConfigAnnouncementResponse(res)
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    fun updateAdsConfig() {
+        val jsonRes = FileSystemResource(adsConfigFilePath)
+        val text = jsonRes.inputStream.bufferedReader().use(BufferedReader::readText)
+
+        val scenes: List<JsonObject> = Json.decodeFromString(text)
+
+        val res = scenes.map {
+            val jsonObject = it as? JsonObject
+            jsonObject?.let {
+                AdsInfo(
+                    scene = AdsScene.valueOf((it.get("scene") as JsonPrimitive).content),
+                    adsType = AdsType.valueOf((it.get("adsType") as JsonPrimitive).content),
+                    togglePhase = (it.get("togglePhase") as JsonPrimitive).content.toInt(),
+                    provider = AdsProvider.valueOf((it.get("provider") as JsonPrimitive).content)
+                )
+            }
+        }.filterNotNull()
+
+        repository.setAdsConfigResponse(AdsConfigResponse(res))
     }
 }

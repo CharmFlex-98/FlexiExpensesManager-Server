@@ -5,6 +5,7 @@ services:
       - "3010:3000"
     environment:
       - CONFIG_ANNOUNCEMENT_FILE_PATH=/app/config/scene_announcements.json
+      - CONFIG_ADS_FILE_PATH=/app/config/ads_config.json
       - SECRET_FILE_PATH=/app/secrets/prod_private.pem
 
     volumes:

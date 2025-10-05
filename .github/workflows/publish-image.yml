@@ -23,9 +23,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           passphrase: ${{ secrets.SERVER_SSH_PW }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: ./config/scene_announcements.json
-          target: ./servers/fem_server/config
-          strip_components: 2
+          source: ./config
+          target: ./servers/fem_server
+          strip_components: 1
 
       - name: send docker-compose.yml to server
         uses: appleboy/scp-action@v0.1.7

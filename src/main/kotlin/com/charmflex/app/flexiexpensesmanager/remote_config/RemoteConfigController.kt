@@ -2,10 +2,12 @@ package com.charmflex.app.flexiexpensesmanager.remote_config
 
 import com.charmflex.app.flexiexpensesmanager.core.exceptions.GenericException
 import com.charmflex.app.flexiexpensesmanager.core.interceptors.SignedResponse
+import com.charmflex.app.flexiexpensesmanager.remote_config.models.AdsConfigResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementRequest
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.services.RemoteConfigService
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -29,5 +31,14 @@ class RemoteConfigController(
         @RequestHeader("Accept-Language") language: String // or any header name
     ): RemoteConfigAnnouncementResponse? {
         return remoteConfigService.getAnnouncement(remoteConfigAnnouncementRequest.scene, language, appVersion)
+    }
+
+    @GetMapping("/ads-config")
+    @ResponseStatus(HttpStatus.OK)
+    @SignedResponse
+    fun getAdsConfig(
+        @RequestHeader("App-Version") appVersion: String
+    ) : AdsConfigResponse {
+        return remoteConfigService.getAdsConfig()
     }
 }

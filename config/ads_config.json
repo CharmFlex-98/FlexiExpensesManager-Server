@@ -1,0 +1,14 @@
+[
+  {
+    "scene": "HOME",
+    "adsType": "BANNER",
+    "togglePhase": 100,
+    "provider": "APPYLAR"
+  },
+  {
+    "scene": "NEW_TRANSACTION",
+    "adsType": "INTERSTITIAL",
+    "togglePhase": 100,
+    "provider": "APPYLAR"
+  }
+]

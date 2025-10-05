@@ -1,5 +1,6 @@
 package com.charmflex.app.flexiexpensesmanager.remote_config.services
 
+import com.charmflex.app.flexiexpensesmanager.remote_config.models.AdsConfigResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigAnnouncementResponse
 import com.charmflex.app.flexiexpensesmanager.remote_config.models.RemoteConfigScene
 import com.charmflex.app.flexiexpensesmanager.remote_config.repositories.RemoteConfigRepository
@@ -13,7 +14,11 @@ class RemoteConfigService(
     private val remoteConfigRepository: RemoteConfigRepository,
     private val messageSource: MessageSource
 ) {
-    fun getAnnouncement(scene: RemoteConfigScene, localeKey: String, appVersion: String): RemoteConfigAnnouncementResponse? {
+    fun getAnnouncement(
+        scene: RemoteConfigScene,
+        localeKey: String,
+        appVersion: String
+    ): RemoteConfigAnnouncementResponse? {
         val result = remoteConfigRepository.announcementCache
         val appVer = appVersion.split("-")[0]
         val res = result?.firstOrNull { it.scene == scene && matchVersion(appVer, it.target) }
@@ -32,7 +37,7 @@ class RemoteConfigService(
         return RemoteConfigAnnouncementResponse(
             scene = res.scene,
             title = messageSource.getMessage(res.title, null, locale),
-            subtitle =  messageSource.getMessage(res.subtitle, null, locale),
+            subtitle = messageSource.getMessage(res.subtitle, null, locale),
             label = messageSource.getMessage(res.label, null, locale),
             closable = res.closable,
             iconType = res.iconType,
@@ -72,11 +77,15 @@ class RemoteConfigService(
     }
 
     private fun compareVersion(appVersion: String, target: String): Int {
-        val appVersionTotal = appVersion.split(".").map { it.toInt() }.reduce { acc, item ->  acc * 10 + item }
-        val targetTotal = target.split(".").map { it.toInt() }.reduce { acc, item ->  acc * 10 + item }
+        val appVersionTotal = appVersion.split(".").map { it.toInt() }.reduce { acc, item -> acc * 10 + item }
+        val targetTotal = target.split(".").map { it.toInt() }.reduce { acc, item -> acc * 10 + item }
 
         if (appVersionTotal < targetTotal) return -1
         if (appVersionTotal == targetTotal) return 0
         return 1
+    }
+
+    fun getAdsConfig(): AdsConfigResponse {
+        return remoteConfigRepository.adsConfigCache
     }
 }
