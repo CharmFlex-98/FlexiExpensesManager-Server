@@ -26,7 +26,7 @@ class RemoteConfigService(
         if (res == null) return null
 
         val locale = when (localeKey) {
-            "zh_CN" -> Locale.CHINESE
+            "zh_CN" -> Locale.SIMPLIFIED_CHINESE
             "zh_TW" -> Locale.TAIWAN
             "zh_HK" -> Locale("zh", "HK")
             "ja" -> Locale.JAPANESE

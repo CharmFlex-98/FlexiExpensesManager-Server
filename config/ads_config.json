@@ -8,7 +8,7 @@
   {
     "scene": "NEW_TRANSACTION",
     "adsType": "INTERSTITIAL",
-    "togglePhase": 100,
+    "togglePhase": 50,
     "provider": "APPYLAR"
   }
 ]
