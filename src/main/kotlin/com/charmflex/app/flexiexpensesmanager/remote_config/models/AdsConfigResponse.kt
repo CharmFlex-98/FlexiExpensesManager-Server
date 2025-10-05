@@ -1,13 +1,5 @@
 package com.charmflex.app.flexiexpensesmanager.remote_config.models
 
-import kotlinx.serialization.Serializable
-
-data class AdsInfoJson(
-    val scene: AdsScene,
-    val adsType: AdsType,
-    val togglePhase: Int,
-    val provider: AdsProvider
-)
 
 data class AdsConfigResponse(
     val adsInfos: List<AdsInfo>

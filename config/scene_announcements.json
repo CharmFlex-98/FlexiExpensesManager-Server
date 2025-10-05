@@ -8,7 +8,20 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "|1.0.14",
+    "target": "|1.0.16",
+    "version": 1,
+    "allowNotShowAgain": true
+  },
+  {
+    "scene": "HOME",
+    "title": "announcement_feature_share_title",
+    "subtitle": "announcement_feature_share_subtitle",
+    "label": "announcement_feature_share_label",
+    "closable": true,
+    "iconType": "ANNOUNCEMENT",
+    "actionType": "CLOSE",
+    "show": true,
+    "target": "1.0.16",
     "version": 1,
     "allowNotShowAgain": true
   },
