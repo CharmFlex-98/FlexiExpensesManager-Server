@@ -8,7 +8,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "UPDATE_AT_STORE",
     "show": true,
-    "target": "|1.0.16",
+    "target": "|1.0.18",
     "version": 1,
     "allowNotShowAgain": true
   },
@@ -21,7 +21,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "1.0.16",
+    "target": "1.0.18",
     "version": 1,
     "allowNotShowAgain": true
   },
