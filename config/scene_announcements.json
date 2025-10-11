@@ -8,8 +8,8 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "UPDATE_AT_STORE",
     "show": true,
-    "target": "|1.0.18",
-    "version": 1,
+    "target": "|1.0.19",
+    "version": 2,
     "allowNotShowAgain": true
   },
   {
@@ -21,7 +21,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "1.0.18",
+    "target": "1.0.19",
     "version": 1,
     "allowNotShowAgain": true
   },
@@ -30,7 +30,7 @@
     "title": "announcement_feature_in_development_title",
     "subtitle": "announcement_feature_in_development_subtitle",
     "label": "announcement_feature_in_development_label",
-    "closable": true,
+    "closable": false,
     "iconType": "ANNOUNCEMENT",
     "actionType": "BACK",
     "show": true,
