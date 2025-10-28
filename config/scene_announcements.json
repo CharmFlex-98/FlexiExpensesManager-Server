@@ -21,7 +21,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "1.0.20",
+    "target": "|1.0.22",
     "version": 1,
     "allowNotShowAgain": true
   },

@@ -31,7 +31,13 @@ class RemoteConfigService(
             "zh_HK" -> Locale("zh", "HK")
             "ja" -> Locale.JAPANESE
             "ko" -> Locale.KOREAN
-            else -> Locale.US
+            else -> {
+                if (localeKey.contains("zh")) {
+                    Locale.SIMPLIFIED_CHINESE
+                } else {
+                    Locale.US
+                }
+            }
         }
 
         return RemoteConfigAnnouncementResponse(
