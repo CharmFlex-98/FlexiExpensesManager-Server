@@ -1,9 +1,9 @@
 [
   {
     "scene": "HOME",
-    "title": "announcement_feature_update_title",
-    "subtitle": "announcement_feature_update_subtitle",
-    "label": "announcement_feature_update_label",
+    "title": "announcement_bug_fix_title",
+    "subtitle": "announcement_bug_fix_subtitle",
+    "label": "announcement_bug_fix_label",
     "closable": true,
     "iconType": "ANNOUNCEMENT",
     "actionType": "UPDATE_AT_STORE",
