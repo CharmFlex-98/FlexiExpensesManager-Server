@@ -4,13 +4,13 @@
     "title": "announcement_bug_fix_title",
     "subtitle": "announcement_bug_fix_subtitle",
     "label": "announcement_bug_fix_label",
-    "closable": true,
+    "closable": false,
     "iconType": "ANNOUNCEMENT",
     "actionType": "UPDATE_AT_STORE",
     "show": true,
-    "target": "|1.0.28",
-    "version": 5,
-    "allowNotShowAgain": true
+    "target": "1.0.28",
+    "version": 6,
+    "allowNotShowAgain": false
   },
   {
     "scene": "HOME",
@@ -21,7 +21,7 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "CLOSE",
     "show": true,
-    "target": "1.0.28",
+    "target": "|1.0.28",
     "version": 1,
     "allowNotShowAgain": true
   },
