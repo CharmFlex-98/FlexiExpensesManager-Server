@@ -8,9 +8,22 @@
     "iconType": "ANNOUNCEMENT",
     "actionType": "UPDATE_AT_STORE",
     "show": true,
-    "target": "|1.0.29",
+    "target": "1.0.28",
     "version": 6,
     "allowNotShowAgain": false
+  },
+  {
+    "scene": "HOME",
+    "title": "announcement_bug_fix_title",
+    "subtitle": "announcement_bug_fix_subtitle",
+    "label": "announcement_bug_fix_label",
+    "closable": true,
+    "iconType": "ANNOUNCEMENT",
+    "actionType": "UPDATE_AT_STORE",
+    "show": true,
+    "target": "|1.0.28",
+    "version": 6,
+    "allowNotShowAgain": true
   },
   {
     "scene": "HOME",
