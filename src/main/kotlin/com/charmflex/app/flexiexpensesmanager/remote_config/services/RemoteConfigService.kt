@@ -83,8 +83,9 @@ class RemoteConfigService(
     }
 
     private fun compareVersion(appVersion: String, target: String): Int {
-        val appVersionTotal = appVersion.split(".").map { it.toInt() }.reduce { acc, item -> acc * 10 + item }
-        val targetTotal = target.split(".").map { it.toInt() }.reduce { acc, item -> acc * 10 + item }
+        val maxVersion = 100
+        val appVersionTotal = appVersion.split(".").map { it.toInt() }.reduce { acc, item -> acc * maxVersion + item }
+        val targetTotal = target.split(".").map { it.toInt() }.reduce { acc, item -> acc * maxVersion + item }
 
         if (appVersionTotal < targetTotal) return -1
         if (appVersionTotal == targetTotal) return 0
