@@ -1,13 +1,33 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=flexiexpensesmanager
+      - POSTGRES_USER=flexi
+      - POSTGRES_PASSWORD=flexi
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   app:
     image: charmflex/server-flexiexpensesmanager:latest
+    depends_on:
+      - postgres
     ports:
       - "3010:3000"
     environment:
       - CONFIG_ANNOUNCEMENT_FILE_PATH=/app/config/scene_announcements.json
       - CONFIG_ADS_FILE_PATH=/app/config/ads_config.json
       - SECRET_FILE_PATH=/app/secrets/prod_private.pem
+      - DB_URL=jdbc:postgresql://postgres:5432/flexiexpensesmanager
+      - DB_USERNAME=flexi
+      - DB_PASSWORD=flexi
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/app/secrets/firebase-service-account.json
 
     volumes:
       - ./config:/app/config:ro
       - ./secrets:/app/secrets:ro
+
+volumes:
+  postgres-data:

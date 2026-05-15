@@ -8,17 +8,17 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Repository
 
 @Repository
-final class RemoteConfigRepository(
+class RemoteConfigRepository(
     @Value("\${remote-config.scene-announcement.path}")
     private val remoteConfigFilePath: String,
     private val resourceLoader: ResourceLoader
 ) {
     @Volatile
-    var announcementCache: List<RemoteConfigAnnouncementJson>? = null
+    final var announcementCache: List<RemoteConfigAnnouncementJson>? = null
         private set
 
     @Volatile
-    var adsConfigCache: AdsConfigResponse = AdsConfigResponse(emptyList())
+    final var adsConfigCache: AdsConfigResponse = AdsConfigResponse(emptyList())
         private set
 
 
