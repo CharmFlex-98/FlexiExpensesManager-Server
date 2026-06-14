@@ -23,13 +23,14 @@ class FirebaseTokenVerifier(
         }
         val uid = token.uid
         if (uid.isBlank()) throw InvalidAuthorizationException
-        val displayName = token.name?.takeIf { it.isNotBlank() }
-            ?: token.email?.takeIf { it.isNotBlank() }
-            ?: uid
+        val email = token.email?.trim()?.takeIf { it.isNotBlank() }
+        val displayName = token.name?.trim()?.takeIf { it.isNotBlank() }
+            ?: email?.substringBefore("@")?.takeIf { it.isNotBlank() }
+            ?: "Unknown user"
         return AuthenticatedUser(
             remoteUserId = uid,
             displayName = displayName,
-            email = token.email
+            email = email
         )
     }
 

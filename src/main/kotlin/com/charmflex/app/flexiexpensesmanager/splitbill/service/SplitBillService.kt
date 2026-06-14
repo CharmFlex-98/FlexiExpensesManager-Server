@@ -56,6 +56,7 @@ class SplitBillService(
 
     @Transactional
     fun createInviteCode(user: AuthenticatedUser, remoteGroupId: String): SplitGroupResponse {
+        splitBillRepository.upsertUser(user)
         requireMember(remoteGroupId, user.remoteUserId)
         val inviteCode = generateInviteCode()
         splitBillRepository.updateInviteCode(remoteGroupId, inviteCode)
@@ -72,15 +73,17 @@ class SplitBillService(
         return getGroup(user, group.remoteGroupId)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun listGroups(user: AuthenticatedUser): SplitGroupListResponse {
+        splitBillRepository.upsertUser(user)
         val groups = splitBillRepository.listGroupsForUser(user.remoteUserId)
             .map { buildGroupResponse(it) }
         return SplitGroupListResponse(groups)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getGroup(user: AuthenticatedUser, remoteGroupId: String): SplitGroupResponse {
+        splitBillRepository.upsertUser(user)
         requireMember(remoteGroupId, user.remoteUserId)
         val group = splitBillRepository.findGroup(remoteGroupId) ?: throw SplitGroupNotFoundException
         return buildGroupResponse(group)
@@ -92,6 +95,7 @@ class SplitBillService(
         remoteGroupId: String,
         request: CreateRemoteBillRequest,
     ): RemoteBillResponse {
+        splitBillRepository.upsertUser(user)
         val creator = requireMember(remoteGroupId, user.remoteUserId)
         validateBillRequest(remoteGroupId, request)
         splitBillRepository.findMemberById(remoteGroupId, request.payerRemoteMemberId)
@@ -134,9 +138,13 @@ class SplitBillService(
         remoteGroupId: String,
         request: CreateRemotePaymentRequest,
     ): RemotePaymentResponse {
+        splitBillRepository.upsertUser(user)
         val creator = requireMember(remoteGroupId, user.remoteUserId)
         validatePaymentRequest(remoteGroupId, request)
         val bill = splitBillRepository.findBill(remoteGroupId, request.remoteBillId) ?: throw SplitBillNotFoundException
+        if (!bill.currencyCode.equals(request.currencyCode.trim(), ignoreCase = true)) {
+            throw SplitPaymentRequestInvalidException
+        }
         splitBillRepository.findMemberById(remoteGroupId, request.payerRemoteMemberId)
             ?: throw SplitMemberNotFoundException
         val receiver = splitBillRepository.findMemberById(remoteGroupId, request.receiverRemoteMemberId)
@@ -224,11 +232,22 @@ class SplitBillService(
             throw SplitBillRequestInvalidException
         }
         request.participants.forEach {
-            if (it.debtorRemoteMemberId.isBlank() || it.owedMinorUnitAmount <= 0) {
+            if (
+                it.debtorRemoteMemberId.isBlank() ||
+                it.debtorRemoteMemberId == request.payerRemoteMemberId ||
+                it.owedMinorUnitAmount <= 0
+            ) {
                 throw SplitBillRequestInvalidException
             }
         }
-        if (request.participants.sumOf { it.owedMinorUnitAmount } != request.totalMinorUnitAmount) {
+        val participantTotal = try {
+            request.participants.fold(0L) { total, participant ->
+                Math.addExact(total, participant.owedMinorUnitAmount)
+            }
+        } catch (_: ArithmeticException) {
+            throw SplitBillParticipantTotalException
+        }
+        if (participantTotal != request.totalMinorUnitAmount) {
             throw SplitBillParticipantTotalException
         }
     }

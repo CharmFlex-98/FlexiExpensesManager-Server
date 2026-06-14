@@ -31,6 +31,18 @@ class SplitBillRepository(
                 "email" to user.email
             )
         )
+        jdbcTemplate.update(
+            """
+            UPDATE split_group_members
+            SET display_name = :displayName, email = :email
+            WHERE remote_user_id = :remoteUserId
+            """.trimIndent(),
+            mapOf(
+                "remoteUserId" to user.remoteUserId,
+                "displayName" to user.displayName,
+                "email" to user.email
+            )
+        )
     }
 
     fun insertGroup(remoteGroupId: String, ownerRemoteUserId: String, name: String) {
