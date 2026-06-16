@@ -255,6 +255,30 @@ class SplitBillRepository(
         }
     }
 
+    fun findParticipant(remoteBillId: String, debtorRemoteMemberId: String): SplitBillParticipantRecord? {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM split_bill_participants
+            WHERE remote_bill_id = :remoteBillId
+                AND debtor_remote_member_id = :debtorRemoteMemberId
+            LIMIT 1
+            """.trimIndent(),
+            mapOf(
+                "remoteBillId" to remoteBillId,
+                "debtorRemoteMemberId" to debtorRemoteMemberId
+            )
+        ) { rs, _ ->
+            SplitBillParticipantRecord(
+                remoteParticipantId = rs.getString("remote_participant_id"),
+                remoteBillId = rs.getString("remote_bill_id"),
+                debtorRemoteMemberId = rs.getString("debtor_remote_member_id"),
+                owedMinorUnitAmount = rs.getLong("owed_minor_unit_amount"),
+                paidMinorUnitAmount = rs.getLong("paid_minor_unit_amount"),
+                isSettled = rs.getBoolean("is_settled")
+            )
+        }.firstOrNull()
+    }
+
     fun insertPayment(
         remotePaymentId: String,
         remoteGroupId: String,

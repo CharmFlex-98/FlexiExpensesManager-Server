@@ -10,6 +10,7 @@ import com.charmflex.app.flexiexpensesmanager.splitbill.SplitGroupForbiddenExcep
 import com.charmflex.app.flexiexpensesmanager.splitbill.SplitGroupNameRequiredException
 import com.charmflex.app.flexiexpensesmanager.splitbill.SplitGroupNotFoundException
 import com.charmflex.app.flexiexpensesmanager.splitbill.SplitMemberNotFoundException
+import com.charmflex.app.flexiexpensesmanager.splitbill.SplitPaymentForbiddenException
 import com.charmflex.app.flexiexpensesmanager.splitbill.SplitPaymentRequestInvalidException
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.CreateRemoteBillRequest
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.CreateRemotePaymentRequest
@@ -149,6 +150,23 @@ class SplitBillService(
             ?: throw SplitMemberNotFoundException
         val receiver = splitBillRepository.findMemberById(remoteGroupId, request.receiverRemoteMemberId)
             ?: throw SplitMemberNotFoundException
+        val participant = splitBillRepository.findParticipant(
+            remoteBillId = request.remoteBillId,
+            debtorRemoteMemberId = request.payerRemoteMemberId
+        ) ?: throw SplitPaymentRequestInvalidException
+        if (request.receiverRemoteMemberId != bill.payerRemoteMemberId) {
+            throw SplitPaymentRequestInvalidException
+        }
+        if (
+            creator.remoteMemberId != request.payerRemoteMemberId &&
+            creator.remoteMemberId != bill.payerRemoteMemberId
+        ) {
+            throw SplitPaymentForbiddenException
+        }
+        val remainingMinorUnitAmount = participant.owedMinorUnitAmount - participant.paidMinorUnitAmount
+        if (remainingMinorUnitAmount <= 0 || request.minorUnitAmount > remainingMinorUnitAmount) {
+            throw SplitPaymentRequestInvalidException
+        }
 
         val remotePaymentId = newRemoteId()
         val currencyCode = request.currencyCode.trim().uppercase(Locale.US)
@@ -162,13 +180,11 @@ class SplitBillService(
             currencyCode = currencyCode,
             creatorRemoteMemberId = creator.remoteMemberId
         )
-        if (bill.payerRemoteMemberId == request.receiverRemoteMemberId) {
-            splitBillRepository.applyPaymentToParticipant(
-                remoteBillId = request.remoteBillId,
-                debtorRemoteMemberId = request.payerRemoteMemberId,
-                amount = request.minorUnitAmount
-            )
-        }
+        splitBillRepository.applyPaymentToParticipant(
+            remoteBillId = request.remoteBillId,
+            debtorRemoteMemberId = request.payerRemoteMemberId,
+            amount = request.minorUnitAmount
+        )
         splitBillNotificationService.notifyPaymentReceived(
             receiver = receiver,
             remoteGroupId = remoteGroupId,

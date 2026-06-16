@@ -45,6 +45,12 @@ object SplitGroupForbiddenException : ExceptionBase(
     "Authenticated user is not a member of this split group."
 )
 
+object SplitPaymentForbiddenException : ExceptionBase(
+    HttpServletResponse.SC_FORBIDDEN,
+    "SPLIT_PAYMENT_FORBIDDEN",
+    "Authenticated user cannot record this split payment."
+)
+
 object SplitBillParticipantTotalException : ExceptionBase(
     HttpServletResponse.SC_BAD_REQUEST,
     "SPLIT_BILL_PARTICIPANT_TOTAL_INVALID",
