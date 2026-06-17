@@ -11,12 +11,16 @@ import com.charmflex.app.flexiexpensesmanager.splitbill.dto.RemoteBillResponse
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.RemotePaymentResponse
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.SplitGroupListResponse
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.SplitGroupResponse
+import com.charmflex.app.flexiexpensesmanager.splitbill.dto.UpdateRemoteBillRequest
+import com.charmflex.app.flexiexpensesmanager.splitbill.dto.UpdateRemotePaymentRequest
 import com.charmflex.app.flexiexpensesmanager.splitbill.service.SplitBillService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -79,6 +83,27 @@ class SplitBillController(
         return splitBillService.createBill(servletRequest.authenticatedUser(), remoteGroupId, request)
     }
 
+    @PutMapping("/split-groups/{remoteGroupId}/bills/{remoteBillId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun updateBill(
+        servletRequest: HttpServletRequest,
+        @PathVariable remoteGroupId: String,
+        @PathVariable remoteBillId: String,
+        @RequestBody request: UpdateRemoteBillRequest,
+    ): RemoteBillResponse {
+        return splitBillService.updateBill(servletRequest.authenticatedUser(), remoteGroupId, remoteBillId, request)
+    }
+
+    @DeleteMapping("/split-groups/{remoteGroupId}/bills/{remoteBillId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun deleteBill(
+        servletRequest: HttpServletRequest,
+        @PathVariable remoteGroupId: String,
+        @PathVariable remoteBillId: String,
+    ): EmptyResponse {
+        return splitBillService.deleteBill(servletRequest.authenticatedUser(), remoteGroupId, remoteBillId)
+    }
+
     @PostMapping("/split-groups/{remoteGroupId}/payments")
     @ResponseStatus(HttpStatus.OK)
     fun createPayment(
@@ -87,6 +112,27 @@ class SplitBillController(
         @RequestBody request: CreateRemotePaymentRequest,
     ): RemotePaymentResponse {
         return splitBillService.createPayment(servletRequest.authenticatedUser(), remoteGroupId, request)
+    }
+
+    @PutMapping("/split-groups/{remoteGroupId}/payments/{remotePaymentId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun updatePayment(
+        servletRequest: HttpServletRequest,
+        @PathVariable remoteGroupId: String,
+        @PathVariable remotePaymentId: String,
+        @RequestBody request: UpdateRemotePaymentRequest,
+    ): RemotePaymentResponse {
+        return splitBillService.updatePayment(servletRequest.authenticatedUser(), remoteGroupId, remotePaymentId, request)
+    }
+
+    @DeleteMapping("/split-groups/{remoteGroupId}/payments/{remotePaymentId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun deletePayment(
+        servletRequest: HttpServletRequest,
+        @PathVariable remoteGroupId: String,
+        @PathVariable remotePaymentId: String,
+    ): EmptyResponse {
+        return splitBillService.deletePayment(servletRequest.authenticatedUser(), remoteGroupId, remotePaymentId)
     }
 
     @PostMapping("/devices/notification-token")

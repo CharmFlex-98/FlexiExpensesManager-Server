@@ -223,6 +223,47 @@ class SplitBillRepository(
         ).firstOrNull()
     }
 
+    fun updateBill(
+        remoteGroupId: String,
+        remoteBillId: String,
+        description: String,
+        totalMinorUnitAmount: Long,
+        currencyCode: String,
+        payerRemoteMemberId: String,
+    ) {
+        jdbcTemplate.update(
+            """
+            UPDATE split_bills
+            SET description = :description,
+                total_minor_unit_amount = :totalMinorUnitAmount,
+                currency_code = :currencyCode,
+                payer_remote_member_id = :payerRemoteMemberId,
+                updated_at = NOW()
+            WHERE remote_group_id = :remoteGroupId
+                AND remote_bill_id = :remoteBillId
+            """.trimIndent(),
+            mapOf(
+                "remoteGroupId" to remoteGroupId,
+                "remoteBillId" to remoteBillId,
+                "description" to description,
+                "totalMinorUnitAmount" to totalMinorUnitAmount,
+                "currencyCode" to currencyCode,
+                "payerRemoteMemberId" to payerRemoteMemberId
+            )
+        )
+    }
+
+    fun deleteBill(remoteGroupId: String, remoteBillId: String) {
+        jdbcTemplate.update(
+            """
+            DELETE FROM split_bills
+            WHERE remote_group_id = :remoteGroupId
+                AND remote_bill_id = :remoteBillId
+            """.trimIndent(),
+            mapOf("remoteGroupId" to remoteGroupId, "remoteBillId" to remoteBillId)
+        )
+    }
+
     fun listBills(remoteGroupId: String): List<SplitBillRecord> {
         return queryBill(
             """
@@ -253,6 +294,35 @@ class SplitBillRepository(
                 isSettled = rs.getBoolean("is_settled")
             )
         }
+    }
+
+    fun listParticipantsForBill(remoteBillId: String): List<SplitBillParticipantRecord> {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM split_bill_participants
+            WHERE remote_bill_id = :remoteBillId
+            """.trimIndent(),
+            mapOf("remoteBillId" to remoteBillId)
+        ) { rs, _ ->
+            SplitBillParticipantRecord(
+                remoteParticipantId = rs.getString("remote_participant_id"),
+                remoteBillId = rs.getString("remote_bill_id"),
+                debtorRemoteMemberId = rs.getString("debtor_remote_member_id"),
+                owedMinorUnitAmount = rs.getLong("owed_minor_unit_amount"),
+                paidMinorUnitAmount = rs.getLong("paid_minor_unit_amount"),
+                isSettled = rs.getBoolean("is_settled")
+            )
+        }
+    }
+
+    fun deleteParticipants(remoteBillId: String) {
+        jdbcTemplate.update(
+            """
+            DELETE FROM split_bill_participants
+            WHERE remote_bill_id = :remoteBillId
+            """.trimIndent(),
+            mapOf("remoteBillId" to remoteBillId)
+        )
     }
 
     fun findParticipant(remoteBillId: String, debtorRemoteMemberId: String): SplitBillParticipantRecord? {
@@ -313,6 +383,60 @@ class SplitBillRepository(
         )
     }
 
+    fun findPayment(remoteGroupId: String, remotePaymentId: String): SplitPaymentRecord? {
+        return jdbcTemplate.query(
+            """
+            SELECT * FROM split_payments
+            WHERE remote_group_id = :remoteGroupId
+                AND remote_payment_id = :remotePaymentId
+            LIMIT 1
+            """.trimIndent(),
+            mapOf("remoteGroupId" to remoteGroupId, "remotePaymentId" to remotePaymentId)
+        ) { rs, _ ->
+            SplitPaymentRecord(
+                remotePaymentId = rs.getString("remote_payment_id"),
+                remoteGroupId = rs.getString("remote_group_id"),
+                remoteBillId = rs.getString("remote_bill_id"),
+                payerRemoteMemberId = rs.getString("payer_remote_member_id"),
+                receiverRemoteMemberId = rs.getString("receiver_remote_member_id"),
+                minorUnitAmount = rs.getLong("minor_unit_amount"),
+                currencyCode = rs.getString("currency_code"),
+                createdAt = rs.getObject("created_at", OffsetDateTime::class.java)
+            )
+        }.firstOrNull()
+    }
+
+    fun listPaymentsForBill(remoteGroupId: String, remoteBillId: String): List<SplitPaymentRecord> {
+        return listPayments(remoteGroupId).filter { it.remoteBillId == remoteBillId }
+    }
+
+    fun updatePaymentAmount(remoteGroupId: String, remotePaymentId: String, minorUnitAmount: Long) {
+        jdbcTemplate.update(
+            """
+            UPDATE split_payments
+            SET minor_unit_amount = :minorUnitAmount
+            WHERE remote_group_id = :remoteGroupId
+                AND remote_payment_id = :remotePaymentId
+            """.trimIndent(),
+            mapOf(
+                "remoteGroupId" to remoteGroupId,
+                "remotePaymentId" to remotePaymentId,
+                "minorUnitAmount" to minorUnitAmount
+            )
+        )
+    }
+
+    fun deletePayment(remoteGroupId: String, remotePaymentId: String) {
+        jdbcTemplate.update(
+            """
+            DELETE FROM split_payments
+            WHERE remote_group_id = :remoteGroupId
+                AND remote_payment_id = :remotePaymentId
+            """.trimIndent(),
+            mapOf("remoteGroupId" to remoteGroupId, "remotePaymentId" to remotePaymentId)
+        )
+    }
+
     fun applyPaymentToParticipant(remoteBillId: String, debtorRemoteMemberId: String, amount: Long) {
         jdbcTemplate.update(
             """
@@ -327,6 +451,23 @@ class SplitBillRepository(
                 "remoteBillId" to remoteBillId,
                 "debtorRemoteMemberId" to debtorRemoteMemberId,
                 "amount" to amount
+            )
+        )
+    }
+
+    fun setParticipantPaidAmount(remoteBillId: String, debtorRemoteMemberId: String, paidMinorUnitAmount: Long) {
+        jdbcTemplate.update(
+            """
+            UPDATE split_bill_participants
+            SET paid_minor_unit_amount = :paidMinorUnitAmount,
+                is_settled = :paidMinorUnitAmount >= owed_minor_unit_amount
+            WHERE remote_bill_id = :remoteBillId
+                AND debtor_remote_member_id = :debtorRemoteMemberId
+            """.trimIndent(),
+            mapOf(
+                "remoteBillId" to remoteBillId,
+                "debtorRemoteMemberId" to debtorRemoteMemberId,
+                "paidMinorUnitAmount" to paidMinorUnitAmount
             )
         )
     }

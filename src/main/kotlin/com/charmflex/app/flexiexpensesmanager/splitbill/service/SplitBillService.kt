@@ -25,6 +25,8 @@ import com.charmflex.app.flexiexpensesmanager.splitbill.dto.RemotePaymentRespons
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.SplitGroupListResponse
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.SplitGroupMemberResponse
 import com.charmflex.app.flexiexpensesmanager.splitbill.dto.SplitGroupResponse
+import com.charmflex.app.flexiexpensesmanager.splitbill.dto.UpdateRemoteBillRequest
+import com.charmflex.app.flexiexpensesmanager.splitbill.dto.UpdateRemotePaymentRequest
 import com.charmflex.app.flexiexpensesmanager.splitbill.model.SplitBillParticipantRecord
 import com.charmflex.app.flexiexpensesmanager.splitbill.model.SplitBillRecord
 import com.charmflex.app.flexiexpensesmanager.splitbill.model.SplitGroupMemberRecord
@@ -134,6 +136,76 @@ class SplitBillService(
     }
 
     @Transactional
+    fun updateBill(
+        user: AuthenticatedUser,
+        remoteGroupId: String,
+        remoteBillId: String,
+        request: UpdateRemoteBillRequest,
+    ): RemoteBillResponse {
+        splitBillRepository.upsertUser(user)
+        val actor = requireMember(remoteGroupId, user.remoteUserId)
+        val bill = splitBillRepository.findBill(remoteGroupId, remoteBillId) ?: throw SplitBillNotFoundException
+        if (actor.remoteMemberId != bill.payerRemoteMemberId) throw SplitGroupForbiddenException
+        if (splitBillRepository.listPaymentsForBill(remoteGroupId, remoteBillId).isNotEmpty()) {
+            throw SplitBillRequestInvalidException
+        }
+        validateBillRequest(
+            remoteGroupId,
+            CreateRemoteBillRequest(
+                description = request.description,
+                totalMinorUnitAmount = request.totalMinorUnitAmount,
+                currencyCode = request.currencyCode,
+                localTransactionId = null,
+                payerRemoteMemberId = request.payerRemoteMemberId,
+                participants = request.participants
+            )
+        )
+        splitBillRepository.findMemberById(remoteGroupId, request.payerRemoteMemberId)
+            ?: throw SplitMemberNotFoundException
+        request.participants.forEach {
+            splitBillRepository.findMemberById(remoteGroupId, it.debtorRemoteMemberId)
+                ?: throw SplitMemberNotFoundException
+        }
+        splitBillRepository.updateBill(
+            remoteGroupId = remoteGroupId,
+            remoteBillId = remoteBillId,
+            description = request.description.trim(),
+            totalMinorUnitAmount = request.totalMinorUnitAmount,
+            currencyCode = request.currencyCode.trim().uppercase(Locale.US),
+            payerRemoteMemberId = request.payerRemoteMemberId
+        )
+        splitBillRepository.deleteParticipants(remoteBillId)
+        val participants = request.participants.map {
+            SplitBillParticipantRecord(
+                remoteParticipantId = newRemoteId(),
+                remoteBillId = remoteBillId,
+                debtorRemoteMemberId = it.debtorRemoteMemberId,
+                owedMinorUnitAmount = it.owedMinorUnitAmount,
+                paidMinorUnitAmount = 0,
+                isSettled = false
+            )
+        }
+        splitBillRepository.insertParticipants(participants)
+        return billToResponse(
+            splitBillRepository.findBill(remoteGroupId, remoteBillId) ?: throw SplitBillNotFoundException,
+            participants
+        )
+    }
+
+    @Transactional
+    fun deleteBill(user: AuthenticatedUser, remoteGroupId: String, remoteBillId: String): EmptyResponse {
+        splitBillRepository.upsertUser(user)
+        val actor = requireMember(remoteGroupId, user.remoteUserId)
+        val bill = splitBillRepository.findBill(remoteGroupId, remoteBillId) ?: throw SplitBillNotFoundException
+        if (actor.remoteMemberId != bill.payerRemoteMemberId) throw SplitGroupForbiddenException
+        if (splitBillRepository.listPaymentsForBill(remoteGroupId, remoteBillId).isNotEmpty()) {
+            throw SplitBillRequestInvalidException
+        }
+        splitBillRepository.deleteBill(remoteGroupId, remoteBillId)
+        return EmptyResponse(success = true)
+    }
+
+    @Transactional
     fun createPayment(
         user: AuthenticatedUser,
         remoteGroupId: String,
@@ -194,6 +266,67 @@ class SplitBillService(
         return splitBillRepository.listPayments(remoteGroupId)
             .first { it.remotePaymentId == remotePaymentId }
             .toResponse()
+    }
+
+    @Transactional
+    fun updatePayment(
+        user: AuthenticatedUser,
+        remoteGroupId: String,
+        remotePaymentId: String,
+        request: UpdateRemotePaymentRequest,
+    ): RemotePaymentResponse {
+        if (request.minorUnitAmount <= 0) throw SplitPaymentRequestInvalidException
+        splitBillRepository.upsertUser(user)
+        val actor = requireMember(remoteGroupId, user.remoteUserId)
+        val payment = splitBillRepository.findPayment(remoteGroupId, remotePaymentId) ?: throw SplitBillNotFoundException
+        val bill = splitBillRepository.findBill(remoteGroupId, payment.remoteBillId) ?: throw SplitBillNotFoundException
+        if (
+            actor.remoteMemberId != payment.payerRemoteMemberId &&
+            actor.remoteMemberId != payment.receiverRemoteMemberId &&
+            actor.remoteMemberId != bill.payerRemoteMemberId
+        ) {
+            throw SplitPaymentForbiddenException
+        }
+        val participant = splitBillRepository.findParticipant(payment.remoteBillId, payment.payerRemoteMemberId)
+            ?: throw SplitPaymentRequestInvalidException
+        val otherPaidAmount = participant.paidMinorUnitAmount - payment.minorUnitAmount
+        if (otherPaidAmount < 0 || otherPaidAmount + request.minorUnitAmount > participant.owedMinorUnitAmount) {
+            throw SplitPaymentRequestInvalidException
+        }
+        splitBillRepository.updatePaymentAmount(remoteGroupId, remotePaymentId, request.minorUnitAmount)
+        splitBillRepository.setParticipantPaidAmount(
+            remoteBillId = payment.remoteBillId,
+            debtorRemoteMemberId = payment.payerRemoteMemberId,
+            paidMinorUnitAmount = otherPaidAmount + request.minorUnitAmount
+        )
+        return splitBillRepository.findPayment(remoteGroupId, remotePaymentId)?.toResponse()
+            ?: throw SplitBillNotFoundException
+    }
+
+    @Transactional
+    fun deletePayment(user: AuthenticatedUser, remoteGroupId: String, remotePaymentId: String): EmptyResponse {
+        splitBillRepository.upsertUser(user)
+        val actor = requireMember(remoteGroupId, user.remoteUserId)
+        val payment = splitBillRepository.findPayment(remoteGroupId, remotePaymentId) ?: throw SplitBillNotFoundException
+        val bill = splitBillRepository.findBill(remoteGroupId, payment.remoteBillId) ?: throw SplitBillNotFoundException
+        if (
+            actor.remoteMemberId != payment.payerRemoteMemberId &&
+            actor.remoteMemberId != payment.receiverRemoteMemberId &&
+            actor.remoteMemberId != bill.payerRemoteMemberId
+        ) {
+            throw SplitPaymentForbiddenException
+        }
+        val participant = splitBillRepository.findParticipant(payment.remoteBillId, payment.payerRemoteMemberId)
+            ?: throw SplitPaymentRequestInvalidException
+        val updatedPaidAmount = participant.paidMinorUnitAmount - payment.minorUnitAmount
+        if (updatedPaidAmount < 0) throw SplitPaymentRequestInvalidException
+        splitBillRepository.deletePayment(remoteGroupId, remotePaymentId)
+        splitBillRepository.setParticipantPaidAmount(
+            remoteBillId = payment.remoteBillId,
+            debtorRemoteMemberId = payment.payerRemoteMemberId,
+            paidMinorUnitAmount = updatedPaidAmount
+        )
+        return EmptyResponse(success = true)
     }
 
     @Transactional

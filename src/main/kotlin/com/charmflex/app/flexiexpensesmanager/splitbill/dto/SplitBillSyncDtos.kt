@@ -18,6 +18,14 @@ data class CreateRemoteBillRequest(
     val participants: List<RemoteBillParticipantRequest>,
 )
 
+data class UpdateRemoteBillRequest(
+    val description: String,
+    val totalMinorUnitAmount: Long,
+    val currencyCode: String,
+    val payerRemoteMemberId: String,
+    val participants: List<RemoteBillParticipantRequest>,
+)
+
 data class RemoteBillParticipantRequest(
     val debtorRemoteMemberId: String,
     val owedMinorUnitAmount: Long,
@@ -30,6 +38,10 @@ data class CreateRemotePaymentRequest(
     val minorUnitAmount: Long,
     val currencyCode: String,
     val localTransactionId: Long?,
+)
+
+data class UpdateRemotePaymentRequest(
+    val minorUnitAmount: Long,
 )
 
 data class RegisterNotificationTokenRequest(
